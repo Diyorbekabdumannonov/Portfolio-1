@@ -1,58 +1,34 @@
-import Home from './pages/home';
+import { createContext, useState } from "react";
+import Login from './login'
 import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
-import Complated from './pages/complated';
-import Todo from './pages/todo';
-import { createContext, useEffect, useState } from 'react';
+import Home from "./home";
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Home />,
-  },
-  {
-    path: "/complated",
-    element: <Complated />,
-  },
-  {
-    path: "/todo",
-    element: <Todo />,
-  }
-]);
-
-export const Context = createContext([])
+export const AppContext = createContext()
 
 function App() {
-  const [todos, setTodos] = useState([])
+  const [isDarkMode, setIsDarkMode] = useState(false)
+  const [user, setUser] = useState(false)
 
-  const onChecked = (e, todo) => {
-    const todos = JSON.parse(localStorage.getItem('todos'))
-    const UpdatedTodo = todos.find(tod => tod.index === todo.index)
-    const UpdatedTodoIndex = todos.indexOf(UpdatedTodo)
-    if (e.target.checked) {
-      todos[UpdatedTodoIndex].status = 'complated'
-    }
-    else {
-      todos[UpdatedTodoIndex].status = 'all'
-    }
-    localStorage.setItem('todos', JSON.stringify(todos))
-    setTodos(JSON.parse(localStorage.getItem('todos')))
-  }
-
-
-  useEffect(() => {
-    const todos = JSON.parse(localStorage.getItem('todos'))
-    if (todos) {
-      setTodos(todos)
-    }
-  }, [])
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: JSON.parse(localStorage.getItem('PORT_USER')) ? <Home /> : <Login />
+    },
+    {
+      path: "/login",
+      element: <Login />,
+    },
+  ]);
 
   return (
-    <Context.Provider value={{ todos, setTodos, onChecked }}>
-      <RouterProvider router={router} />
-    </Context.Provider>
+    <AppContext.Provider value={{ isDarkMode, setIsDarkMode, user, setUser }}>
+      <div className="max-w-[1440px] mx-auto">
+        <RouterProvider router={router} />
+      </div>
+    </AppContext.Provider>
   );
 }
 
